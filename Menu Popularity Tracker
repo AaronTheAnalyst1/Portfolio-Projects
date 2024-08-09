@@ -1,0 +1,81 @@
+Task/Objective: To create a database that tracks the popularity of menu items based on customer orders. This allows the restaurant to understand which items are the most popular.
+
+Database Schema:
+
+Menu Table:
+
+item_id (Primary Key)
+item_name
+category (e.g., Burger, Drink, Side)
+price
+Orders Table:
+
+order_id (Primary Key)
+item_id (Foreign Key)
+order_date
+
+Step 1: Create the Database and Tables
+
+-- Step 1: Create the 'menu_popularity' database
+CREATE DATABASE menu_popularity;
+
+-- Step 2: Use the newly created database
+USE menu_popularity;
+
+-- Step 3: Create the 'menu' table
+CREATE TABLE menu (
+    item_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_name VARCHAR(100),
+    category VARCHAR(50),
+    price DECIMAL(5,2)
+);
+
+-- Step 4: Create the 'orders' table
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_id INT,
+    order_date DATE,
+    FOREIGN KEY (item_id) REFERENCES menu(item_id)
+);
+
+
+Step 2: Insert Sample Data
+
+-- Step 5: Insert data into 'menu' table
+INSERT INTO menu (item_name, category, price)
+VALUES
+('Zinger Burger', 'Burger', 4.99),
+('Large Fries', 'Side', 2.49),
+('Pepsi', 'Drink', 1.99);
+
+-- Step 6: Insert data into 'orders' table
+INSERT INTO orders (item_id, order_date)
+VALUES
+(1, '2024-08-01'),
+(2, '2024-08-01'),
+(1, '2024-08-02'),
+(3, '2024-08-03'),
+(2, '2024-08-03');
+
+
+Step 3: Perform Simple Queries
+Query 1: Get Total Orders for Each Menu Item
+
+SELECT 
+    m.item_name,
+    COUNT(o.order_id) AS total_orders
+FROM 
+    menu m
+JOIN 
+    orders o ON m.item_id = o.item_id
+GROUP BY 
+    m.item_name;
+
+
+Explanation:
+Purpose: This query calculates the total number of orders for each menu item.
+Group By: Groups the results by item name to show total orders
+
+Conclusion
+This short project provides a simple way to track the popularity of menu items based on customer orders. 
+The basic schema and straightforward queries offer insights into which items are most frequently ordered, helping the restaurant optimize its menu.
