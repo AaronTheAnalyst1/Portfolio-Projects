@@ -1,0 +1,190 @@
+Objective:
+To create a database to store and analyze COVID-19 data in the UK, including cases, vaccinations, and outcomes by region.
+
+Database Schema:
+Regions Table:
+
+region_id (Primary Key)
+region_name
+Covid_Cases Table:
+
+case_id (Primary Key)
+region_id (Foreign Key)
+report_date (Date of the report)
+new_cases
+total_cases
+Vaccinations Table:
+
+vaccination_id (Primary Key)
+region_id (Foreign Key)
+report_date (Date of the report)
+new_vaccinations
+total_vaccinations
+Outcomes Table:
+
+outcome_id (Primary Key)
+region_id (Foreign Key)
+report_date (Date of the report)
+new_deaths
+total_deaths
+new_recoveries
+total_recoveries
+
+
+Step 1: Create the Database and Tables
+
+-- Step 1: Create the 'covid_uk' database
+CREATE DATABASE covid_uk;
+
+-- Step 2: Use the newly created database
+USE covid_uk;
+
+-- Step 3: Create the 'regions' table
+CREATE TABLE regions (
+    region_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_name VARCHAR(100) NOT NULL
+);
+
+-- Step 4: Create the 'covid_cases' table
+CREATE TABLE covid_cases (
+    case_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_id INT,
+    report_date DATE,
+    new_cases INT,
+    total_cases INT,
+    FOREIGN KEY (region_id) REFERENCES regions(region_id)
+);
+
+-- Step 5: Create the 'vaccinations' table
+CREATE TABLE vaccinations (
+    vaccination_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_id INT,
+    report_date DATE,
+    new_vaccinations INT,
+    total_vaccinations INT,
+    FOREIGN KEY (region_id) REFERENCES regions(region_id)
+);
+
+-- Step 6: Create the 'outcomes' table
+CREATE TABLE outcomes (
+    outcome_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_id INT,
+    report_date DATE,
+    new_deaths INT,
+    total_deaths INT,
+    new_recoveries INT,
+    total_recoveries INT,
+    FOREIGN KEY (region_id) REFERENCES regions(region_id)
+);
+
+Explanation:
+Database and Table Creation: I created a covid_uk database and define four tables:
+regions: Stores information about different regions in the UK.
+covid_cases: Tracks daily new and total COVID-19 cases by region.
+vaccinations: Tracks daily new and total vaccinations by region.
+outcomes: Tracks daily new and total deaths and recoveries by region.
+
+Step 2: Insert Sample Data
+
+-- Step 7: Insert data into 'regions' table
+INSERT INTO regions (region_name)
+VALUES
+('England'),
+('Scotland'),
+('Wales'),
+('Northern Ireland');
+
+-- Step 8: Insert data into 'covid_cases' table
+INSERT INTO covid_cases (region_id, report_date, new_cases, total_cases)
+VALUES
+(1, '2024-01-01', 15000, 3000000),
+(2, '2024-01-01', 2000, 400000),
+(3, '2024-01-01', 1200, 250000),
+(4, '2024-01-01', 800, 180000);
+
+-- Step 9: Insert data into 'vaccinations' table
+INSERT INTO vaccinations (region_id, report_date, new_vaccinations, total_vaccinations)
+VALUES
+(1, '2024-01-01', 50000, 20000000),
+(2, '2024-01-01', 7000, 2500000),
+(3, '2024-01-01', 4000, 1800000),
+(4, '2024-01-01', 3000, 1200000);
+
+-- Step 10: Insert data into 'outcomes' table
+INSERT INTO outcomes (region_id, report_date, new_deaths, total_deaths, new_recoveries, total_recoveries)
+VALUES
+(1, '2024-01-01', 200, 100000, 14000, 2900000),
+(2, '2024-01-01', 30, 15000, 1800, 380000),
+(3, '2024-01-01', 20, 10000, 1200, 240000),
+(4, '2024-01-01', 15, 8000, 900, 170000);
+
+Explanation:
+Inserting Data: I inserted sample data into the regions, covid_cases, vaccinations, and outcomes tables.
+regions: Defines four regions in the UK.
+covid_cases: Stores the number of new and total cases as of a specific date for each region.
+vaccinations: Tracks the number of new and total vaccinations for each region on the same date.
+outcomes: Records new and total deaths and recoveries for each region.
+
+Step 3: Perform Queries and Analysis
+
+Query 1: Get Total COVID-19 Cases by Region
+
+SELECT 
+    r.region_name,
+    SUM(c.total_cases) AS total_cases
+FROM 
+    regions r
+JOIN 
+    covid_cases c ON r.region_id = c.region_id
+GROUP BY 
+    r.region_name;
+
+Explanation:
+Purpose: This query retrieves the total number of COVID-19 cases by region.
+Join Operation: We join regions and covid_cases tables to aggregate total cases for each region.
+
+Query 2: Get Total Vaccinations and Deaths by Region
+
+SELECT 
+    r.region_name,
+    SUM(v.total_vaccinations) AS total_vaccinations,
+    SUM(o.total_deaths) AS total_deaths
+FROM 
+    regions r
+JOIN 
+    vaccinations v ON r.region_id = v.region_id
+JOIN 
+    outcomes o ON r.region_id = o.region_id
+GROUP BY 
+    r.region_name;
+
+Explanation:
+Purpose: This query aggregates total vaccinations and deaths by region.
+Multiple Joins: We join regions, vaccinations, and outcomes tables to fetch the required data.
+
+
+Query 3: Get Daily New Cases, Vaccinations, and Deaths for a Specific Region
+
+SELECT 
+    c.report_date,
+    c.new_cases,
+    v.new_vaccinations,
+    o.new_deaths
+FROM 
+    covid_cases c
+JOIN 
+    vaccinations v ON c.region_id = v.region_id AND c.report_date = v.report_date
+JOIN 
+    outcomes o ON c.region_id = o.region_id AND c.report_date = o.report_date
+WHERE 
+    c.region_id = 1
+ORDER BY 
+    c.report_date;
+
+Explanation:
+Purpose: To get a daily breakdown of new cases, vaccinations, and deaths for a specific region (e.g., England).
+Filtering and Ordering: We filter by region and order by the report date to see trends over time.
+
+This full MySQL code creates a database schema to manage COVID-19 data in the UK, inserts sample data, and performs various queries to analyze the pandemic's impact.
+The project demonstrates how to handle multi-table relationships, aggregate data, and perform basic data analysis using SQL.
+This foundational project can be expanded by adding more granular data, such as age groups, hospitalizations, or vaccination types, or by integrating it with data visualization tools for deeper analysis.
