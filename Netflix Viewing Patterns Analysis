@@ -1,0 +1,162 @@
+Task/Objective: To create a database that stores data on users, movies, and viewing history, allowing Netflix to analyze viewing patterns and understand user preferences.
+
+Database Schema:
+Users Table:
+
+user_id (Primary Key)
+user_name
+email
+Movies Table:
+
+movie_id (Primary Key)
+title
+genre
+release_year
+Viewing_History Table:
+
+viewing_id (Primary Key)
+user_id (Foreign Key)
+movie_id (Foreign Key)
+viewing_date
+watch_duration (Time watched in minutes)
+
+
+Step 1: Create the Database and Tables
+
+-- Step 1: Create the 'netflix_viewing' database
+CREATE DATABASE netflix_viewing;
+
+-- Step 2: Use the newly created database
+USE netflix_viewing;
+
+-- Step 3: Create the 'users' table
+CREATE TABLE users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_name VARCHAR(100),
+    email VARCHAR(100) UNIQUE
+);
+
+-- Step 4: Create the 'movies' table
+CREATE TABLE movies (
+    movie_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100),
+    genre VARCHAR(50),
+    release_year INT
+);
+
+-- Step 5: Create the 'viewing_history' table
+CREATE TABLE viewing_history (
+    viewing_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    movie_id INT,
+    viewing_date DATE,
+    watch_duration INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (movie_id) REFERENCES movies(movie_id)
+);
+
+Explanation:
+Database and Table Creation: I create a netflix_viewing database and define three tables:
+users: Stores user information, including name and email.
+movies: Contains details about movies, such as title, genre, and release year.
+viewing_history: Tracks the viewing history, including the user who watched, the movie watched, the date, and the duration watched.
+
+
+Step 2: Insert Sample Data
+
+-- Step 6: Insert data into 'users' table
+INSERT INTO users (user_name, email)
+VALUES
+('John Doe', 'john.doe@example.com'),
+('Jane Smith', 'jane.smith@example.com');
+
+-- Step 7: Insert data into 'movies' table
+INSERT INTO movies (title, genre, release_year)
+VALUES
+('Inception', 'Sci-Fi', 2010),
+('The Godfather', 'Crime', 1972),
+('The Dark Knight', 'Action', 2008);
+
+-- Step 8: Insert data into 'viewing_history' table
+INSERT INTO viewing_history (user_id, movie_id, viewing_date, watch_duration)
+VALUES
+(1, 1, '2024-08-01', 120),
+(2, 2, '2024-08-02', 175),
+(1, 3, '2024-08-03', 150);
+
+
+Explanation:
+Inserting Data: I insert sample data into the users, movies, and viewing_history tables.
+users: Adds users with their names and email addresses.
+movies: Stores movies, including titles, genres, and release years.
+viewing_history: Tracks when and how long users watched specific movies.
+
+
+Step 3: Perform Simple Queries
+
+Query 1: Get Total Viewing Time for Each User
+
+SELECT 
+    u.user_name,
+    SUM(vh.watch_duration) AS total_watch_time
+FROM 
+    users u
+JOIN 
+    viewing_history vh ON u.user_id = vh.user_id
+GROUP BY 
+    u.user_name;
+
+Explanation:
+Purpose: This query calculates the total time each user has spent watching movies.
+Group By: Groups the results by user name to show the total watch time for each user.
+
+
+
+Query 2: Get Most Watched Genre
+
+SELECT 
+    m.genre,
+    COUNT(vh.viewing_id) AS times_watched
+FROM 
+    movies m
+JOIN 
+    viewing_history vh ON m.movie_id = vh.movie_id
+GROUP BY 
+    m.genre
+ORDER BY 
+    times_watched DESC
+LIMIT 1;
+
+Explanation:
+Purpose: This query identifies the most watched genre based on the viewing history.
+Order By: Orders the genres by the number of times they were watched and limits the result to the most popular genre.
+
+
+
+Query 3: Get Viewing History of a Specific User
+
+SELECT 
+    u.user_name,
+    m.title,
+    vh.viewing_date,
+    vh.watch_duration
+FROM 
+    viewing_history vh
+JOIN 
+    users u ON vh.user_id = u.user_id
+JOIN 
+    movies m ON vh.movie_id = m.movie_id
+WHERE 
+    u.user_name = 'John Doe';
+
+Explanation:
+Purpose: This query retrieves the viewing history for a specific user, including movie titles, dates, and watch durations.
+Filtering: Filters the results to show only the viewing history for the specified user.
+
+Conclusion
+
+This MySQL project is designed to analyze viewing patterns for a streaming platform like Netflix. 
+The database schema is simple and captures essential information about users, movies, and their viewing habits. 
+The queries provide insights into user engagement, popular genres, and individual viewing histories.
+This project can be extended by adding features like tracking recommendations, analyzing peak viewing times, or segmenting users by viewing preferences.
+
